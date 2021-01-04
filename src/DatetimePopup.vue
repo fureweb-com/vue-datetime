@@ -1,5 +1,5 @@
 <template>
-  <div class="vdatetime-popup">
+  <div class="vdatetime-popup" :class="mode">
     <div class="vdatetime-popup__header">
       <div class="vdatetime-popup__title" v-if="title">{{ title }}</div>
       <div class="vdatetime-popup__year" @click="showYear" v-if="type !== 'time'">{{ year }}</div>
@@ -62,6 +62,9 @@ import DatetimeMonthPicker from './DatetimeMonthPicker'
 const KEY_TAB = 9
 const KEY_ENTER = 13
 const KEY_ESC = 27
+
+const PORTRAIT = 'portrait'
+const LANDSCAPE = 'landscape'
 
 export default {
   components: {
@@ -134,16 +137,21 @@ export default {
       newDatetime: this.datetime,
       flowManager,
       step: flowManager.first(),
-      timePartsTouched: []
+      timePartsTouched: [],
+      mode: null
     }
   },
 
   created () {
+    this.setInitialMode()
+
     document.addEventListener('keydown', this.onKeyDown)
+    window.addEventListener('orientationchange', this.onOrientationChanged)
   },
 
   beforeDestroy () {
     document.removeEventListener('keydown', this.onKeyDown)
+    window.removeEventListener('orientationchange', this.onOrientationChanged)
   },
 
   computed: {
@@ -265,6 +273,23 @@ export default {
           this.nextStep()
           break
       }
+    },
+    setMode (to) {
+      this.mode = to
+    },
+    setInitialMode () {
+      if (window.innerHeight < window.innerWidth) {
+        this.setMode(LANDSCAPE)
+      } else {
+        this.setMode(PORTRAIT)
+      }
+    },
+    onOrientationChanged () {
+      if (window.screen.orientation.type.startsWith(LANDSCAPE)) {
+        this.setMode(LANDSCAPE)
+      } else {
+        this.setMode(PORTRAIT)
+      }
     }
   }
 }
@@ -290,6 +315,10 @@ export default {
   & * {
     box-sizing: border-box;
   }
+}
+
+.vdatetime-popup.landscape {
+  transform: translate(-50%, -50%) scale(0.8);
 }
 
 .vdatetime-popup__header {
