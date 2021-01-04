@@ -318,7 +318,7 @@ export default {
 }
 
 .vdatetime-popup.landscape {
-  transform: translate(-50%, -50%) scale(0.8);
+  transform: translate(-50%, -50%) scale(0.75);
 }
 
 .vdatetime-popup__header {
